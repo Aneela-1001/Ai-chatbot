@@ -23,6 +23,7 @@ MONGODB_URI=<your-atlas-uri>
 JWT_SECRET=<long-random-secret>
 JWT_EXPIRES_IN=7d
 CLIENT_URL=https://your-vercel-app.vercel.app
+CLIENT_URLS=https://your-vercel-app.vercel.app
 AI_PROVIDER=gemini
 GEMINI_API_KEY=<your-gemini-key>
 GEMINI_MODEL=gemini-2.5-flash-lite

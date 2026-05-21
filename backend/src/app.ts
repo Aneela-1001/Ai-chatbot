@@ -14,7 +14,17 @@ export const app = express();
 app.use(helmet());
 app.use(
   cors({
-    origin: env.clientUrl,
+    origin(origin, callback) {
+      if (!origin) return callback(null, true);
+
+      const isAllowed =
+        env.clientUrls.includes(origin) ||
+        /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin) ||
+        /^http:\/\/localhost:\d+$/i.test(origin);
+
+      if (isAllowed) return callback(null, true);
+      return callback(new Error(`CORS blocked origin: ${origin}`));
+    },
     credentials: true
   })
 );
