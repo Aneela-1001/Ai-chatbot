@@ -93,7 +93,7 @@ async function* streamGeminiResponse(conversation: ConversationDocument) {
 
   if (!response.ok || !response.body) {
     const errorText = await response.text();
-    throw new Error(`Gemini request failed: ${errorText || response.statusText}`);
+    throw new Error(formatGeminiError(errorText || response.statusText));
   }
 
   const reader = response.body.getReader();
@@ -138,6 +138,21 @@ async function* streamGeminiResponse(conversation: ConversationDocument) {
   }
 }
 
+function formatGeminiError(errorText: string) {
+  try {
+    const payload = JSON.parse(errorText);
+    const message = payload.error?.message as string | undefined;
+
+    if (payload.error?.code === 429 || message?.toLowerCase().includes("quota")) {
+      return "Gemini quota limit reached. Wait a while, choose another available Gemini model, or enable billing/API quota in Google AI Studio.";
+    }
+
+    return message ? `Gemini request failed: ${message}` : "Gemini request failed.";
+  } catch {
+    return `Gemini request failed: ${errorText}`;
+  }
+}
+
 async function createGeminiFallbackResponse(conversation: ConversationDocument) {
   if (!env.geminiApiKey) throw new Error("Gemini API key is missing.");
 
@@ -153,7 +168,7 @@ async function createGeminiFallbackResponse(conversation: ConversationDocument) 
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`Gemini fallback request failed: ${errorText || response.statusText}`);
+    throw new Error(formatGeminiError(errorText || response.statusText));
   }
 
   const payload = await response.json();
