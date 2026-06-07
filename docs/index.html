@@ -9,5 +9,11 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Handle single page app routing for GitHub Pages
+      if (window.location.pathname !== '/Ai-chatbot/' && window.location.pathname.includes('/Ai-chatbot/')) {
+        window.history.replaceState(null, null, '/Ai-chatbot/');
+      }
+    </script>
   </body>
 </html>
